@@ -2,6 +2,7 @@ package next;
 
 import java.io.File;
 
+import next.web.CreateUserServlet;
 import org.apache.catalina.startup.Tomcat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
