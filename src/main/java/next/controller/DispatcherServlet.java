@@ -16,26 +16,39 @@ import java.io.IOException;
 @WebServlet(name = "dispatcher", urlPatterns = "/", loadOnStartup = 1)
 public class DispatcherServlet extends HttpServlet {
 
-    public static final Logger log= LoggerFactory.getLogger(DispatcherServlet.class);
+    private static final long serialVersionUID=1L;
+    private static final Logger log= LoggerFactory.getLogger(DispatcherServlet.class);
+    private static final String DEFAULT_REDIRECT_PREFIX="redirect:";
+    private RequestMapping rm;
+
+    @Override
+    public void init() throws ServletException {
+        rm=new RequestMapping();
+        rm.initMapping();
+    }
 
     @Override
     public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
 
         HttpServletRequest request=(HttpServletRequest) req;
         HttpServletResponse response=(HttpServletResponse) res;
-        Controller controller=RequestMapping.getController(request.getRequestURI());
+        Controller controller=rm.getController(request.getRequestURI());
 
         try {
             String result=controller.execute(request, response);
-            if(result.startsWith("redirect:")){
-                redirect(request, response, result);
-            }
-            else {
-                forward(request, response, result);
-            }
+            move(result, request, response);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
+        }
+    }
+
+    private void move(String viewName, HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+        if(viewName.startsWith(DEFAULT_REDIRECT_PREFIX)){
+            redirect(req, resp, viewName);
+        }
+        else {
+            forward(req, resp, viewName);
         }
     }
 
