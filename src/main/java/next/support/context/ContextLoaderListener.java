@@ -22,6 +22,15 @@ public class ContextLoaderListener implements ServletContextListener {
         populator.addScript(new ClassPathResource("jwp.sql"));
         DatabasePopulatorUtils.execute(populator, ConnectionManager.getDataSource());
 
+        ControllerScanner controllerScanner=new ControllerScanner();
+        try {
+            controllerScanner.findController();
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         logger.info("Completed Load ServletContext!");
     }
 
